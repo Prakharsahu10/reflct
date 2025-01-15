@@ -1,6 +1,6 @@
-import Link from "next/link";
 import React from "react";
 import { Card, CardContent } from "./ui/card";
+import Link from "next/link";
 import { format } from "date-fns";
 
 const EntryCard = ({ entry }) => {

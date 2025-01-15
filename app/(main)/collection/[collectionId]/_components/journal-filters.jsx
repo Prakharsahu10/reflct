@@ -1,15 +1,9 @@
 "use client";
 
-import { MOODS } from "@/app/lib/moods";
-import EntryCard from "@/components/entry-card";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -17,20 +11,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { format, isSameDay } from "date-fns";
-import { CalendarIcon, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Calendar as CalendarIcon, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { MOODS } from "@/app/lib/moods";
+import EntryCard from "@/components/entry-card";
 
-const JournalFilters = ({ entries }) => {
+export function JournalFilters({ entries }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMood, setSelectedMood] = useState("");
   const [date, setDate] = useState(null);
   const [filteredEntries, setFilteredEntries] = useState(entries);
 
+  // Apply filters whenever filter values or entries change
   useEffect(() => {
     let filtered = entries;
 
+    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -40,12 +42,12 @@ const JournalFilters = ({ entries }) => {
       );
     }
 
-    //Apply mood filter
+    // Apply mood filter
     if (selectedMood) {
       filtered = filtered.filter((entry) => entry.mood === selectedMood);
     }
 
-    //Apply date filter
+    // Apply date filter
     if (date) {
       filtered = filtered.filter((entry) =>
         isSameDay(new Date(entry.createdAt), date)
@@ -63,6 +65,7 @@ const JournalFilters = ({ entries }) => {
 
   return (
     <>
+      {/* Filters */}
       <div className="flex flex-wrap gap-4">
         <div className="flex-1 min-w-[200px]">
           <Input
@@ -92,14 +95,14 @@ const JournalFilters = ({ entries }) => {
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
+              variant={"outline"}
               className={cn(
                 "justify-start text-left font-normal",
                 !date && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="h-4 w-4" />
-              {date ? format(date, "PPP") : <span>Pick a Date</span>}
+              {date ? format(date, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -115,18 +118,20 @@ const JournalFilters = ({ entries }) => {
         {(searchQuery || selectedMood || date) && (
           <Button
             variant="ghost"
-            className="text-orange-600"
             onClick={clearFilters}
+            className="text-orange-600"
           >
             Clear Filters
           </Button>
         )}
       </div>
 
+      {/* Results Summary */}
       <div className="text-sm text-gray-500">
         Showing {filteredEntries.length} of {entries.length} entries
       </div>
 
+      {/* Entries List */}
       {filteredEntries.length === 0 ? (
         <div className="text-center p-8">
           <p className="text-gray-500">No entries found</p>
@@ -140,6 +145,4 @@ const JournalFilters = ({ entries }) => {
       )}
     </>
   );
-};
-
-export default JournalFilters;
+}

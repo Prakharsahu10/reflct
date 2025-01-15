@@ -1,7 +1,7 @@
 "use server";
 
-import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { db } from "@/lib/prisma";
 
 export async function getAnalytics(period = "30d") {
   const { userId } = await auth();
@@ -13,6 +13,7 @@ export async function getAnalytics(period = "30d") {
 
   if (!user) throw new Error("User not found");
 
+  // Calculate start date based on period
   const startDate = new Date();
   switch (period) {
     case "7d":
@@ -27,6 +28,7 @@ export async function getAnalytics(period = "30d") {
       break;
   }
 
+  // Get entries for the period
   const entries = await db.entry.findMany({
     where: {
       userId: user.id,
@@ -34,12 +36,12 @@ export async function getAnalytics(period = "30d") {
         gte: startDate,
       },
     },
-
     orderBy: {
       createdAt: "asc",
     },
   });
 
+  // Process entries for analytics
   const moodData = entries.reduce((acc, entry) => {
     const date = entry.createdAt.toISOString().split("T")[0];
     if (!acc[date]) {
@@ -55,6 +57,7 @@ export async function getAnalytics(period = "30d") {
     return acc;
   }, {});
 
+  // Calculate averages and format data for charts
   const analyticsData = Object.entries(moodData).map(([date, data]) => ({
     date,
     averageScore: Number((data.totalScore / data.count).toFixed(1)),
@@ -88,6 +91,7 @@ export async function getAnalytics(period = "30d") {
     data: {
       timeline: analyticsData,
       stats: overallStats,
+      entries,
     },
   };
 }

@@ -1,16 +1,15 @@
 "use client";
 
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { collectionSchema } from "@/app/lib/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { collectionSchema } from "@/app/lib/schemas";
 import { BarLoader } from "react-spinners";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
-const CollectionForm = ({ onSuccess, open, setOpen, loading }) => {
+const CollectionForm = ({ onSuccess, loading, open, setOpen }) => {
   const {
     register,
     handleSubmit,
@@ -23,14 +22,9 @@ const CollectionForm = ({ onSuccess, open, setOpen, loading }) => {
     },
   });
 
-  const onSubmit = async (data) => {
-    try {
-      await onSuccess(data); // Call the parent onSuccess function
-      setOpen(false); // Close the dialog box on success
-    } catch (error) {
-      console.error(error.message); // Handle any errors
-    }
-  };
+  const onSubmit = handleSubmit(async (data) => {
+    onSuccess(data);
+  });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -38,17 +32,17 @@ const CollectionForm = ({ onSuccess, open, setOpen, loading }) => {
         <DialogHeader>
           <DialogTitle>Create New Collection</DialogTitle>
         </DialogHeader>
+        {loading && (
+          <BarLoader className="mb-4" width={"100%"} color="orange" />
+        )}
 
-        {loading && <BarLoader color="orange" width={"100%"} />}
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+        <form onSubmit={onSubmit} className="space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium">Collection Name</label>
             <Input
-              disabled={loading}
               {...register("name")}
               placeholder="Enter collection name..."
-              className={`${errors.name ? "border-red-500" : ""}`}
+              className={errors.name ? "border-red-500" : ""}
             />
             {errors.name && (
               <p className="text-red-500 text-sm">{errors.name.message}</p>
@@ -56,12 +50,13 @@ const CollectionForm = ({ onSuccess, open, setOpen, loading }) => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Description</label>
+            <label className="text-sm font-medium">
+              Description (Optional)
+            </label>
             <Textarea
-              disabled={loading}
               {...register("description")}
               placeholder="Describe your collection..."
-              className={`${errors.description ? "border-red-500" : ""}`}
+              className={errors.description ? "border-red-500" : ""}
             />
             {errors.description && (
               <p className="text-red-500 text-sm">
@@ -78,7 +73,7 @@ const CollectionForm = ({ onSuccess, open, setOpen, loading }) => {
             >
               Cancel
             </Button>
-            <Button type="submit" variant="journal" disabled={loading}>
+            <Button type="submit" variant="journal">
               Create Collection
             </Button>
           </div>

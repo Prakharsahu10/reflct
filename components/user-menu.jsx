@@ -2,7 +2,6 @@
 
 import { UserButton } from "@clerk/nextjs";
 import { ChartNoAxesGantt } from "lucide-react";
-import React from "react";
 
 const UserMenu = () => {
   return (
@@ -15,7 +14,7 @@ const UserMenu = () => {
     >
       <UserButton.MenuItems>
         <UserButton.Link
-          label="DashBoard"
+          label="Dashboard"
           labelIcon={<ChartNoAxesGantt size={15} />}
           href="/dashboard"
         />

@@ -1,9 +1,9 @@
 "use client";
 
-import { getMoodById } from "@/app/lib/moods";
-import { formatDistance, formatDistanceToNow } from "date-fns";
-import { Folder, Plus } from "lucide-react";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { Plus } from "lucide-react";
+import { getMoodById } from "@/app/lib/moods";
 
 const colorSchemes = {
   unorganized: {
@@ -45,7 +45,7 @@ const CollectionPreview = ({
     return (
       <button
         onClick={onCreateNew}
-        className="relative group h-[200px] cursor-pointer"
+        className="group relative h-[200px] cursor-pointer"
       >
         <FolderTab colorClass={colorSchemes["createCollection"].bg} />
         <div
@@ -96,9 +96,7 @@ const CollectionPreview = ({
                 .slice(0, 2)
                 .map((entry) => <EntryPreview key={entry.id} entry={entry} />)
             ) : (
-              <p className="text-sm" text-gray-500 italic>
-                No entries yet
-              </p>
+              <p className="text-sm text-gray-500 italic">No entries yet</p>
             )}
           </div>
         </div>
